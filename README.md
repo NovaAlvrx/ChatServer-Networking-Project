@@ -28,10 +28,10 @@ This project was developed collaboratively as part of a networking assignment.
 ## Directory Structure
 ChatServer-Networking-Project/
 ├── README.md
-├── protocol.py        # Shared message helpers (send/receive JSON objects)
-├── server.py          # ChatServer implementation
-├── client.py          # ChatClient implementation
-└── main.py            # Wrapper entry point
+├── protocol.py      # Shared message helpers (send/receive JSON objects)
+├── server.py        # ChatServer implementation
+├── client.py        # ChatClient implementation
+└── main.py          # Wrapper entry point
 
 ## Running the Server
 [Fill later]

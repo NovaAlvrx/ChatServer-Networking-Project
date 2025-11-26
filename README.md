@@ -26,12 +26,14 @@ The server processes these commands, manages channels, broadcasts messages, and 
 This project was developed collaboratively as part of a networking assignment.
 
 ## Directory Structure
-ChatServer-Networking-Project/
-├── README.md
-├── protocol.py      # Shared message helpers (send/receive JSON objects)
-├── server.py        # ChatServer implementation
-├── client.py        # ChatClient implementation
-└── main.py          # Wrapper entry point
+| File | Description |
+|------|-------------|
+| `README.md` | Project documentation and protocol design |
+| `protocol.py` | Shared functions for sending/receiving JSON objects |
+| `server.py` | ChatServer implementation |
+| `client.py` | ChatClient implementation |
+| `main.py` | Entry point wrapper for running server or client |
+
 
 ## Running the Server
 [Fill later]

@@ -1,12 +1,12 @@
-##  📌 Requirement 1 — Object-Based Protocol Design
-# Overview
+#  📌 Requirement 1 — Object-Based Protocol Design
+## Overview
 
 Our chat system uses an object-based communication protocol over TCP.
 Although users type IRC-style commands (such as /nick or /join), the client translates those commands into JSON objects, sends them to the server, and receives JSON objects in return.
 
 This ensures all communication is structured, machine-parseable, and fully compatible with the system’s requirements.
 
-# Message Format & Encoding
+## Message Format & Encoding
 All messages exchanged between client and server follow these rules:
 
  - **Transport**: TCP socket

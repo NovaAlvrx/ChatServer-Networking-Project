@@ -13,6 +13,23 @@ class ServerCore:
         if channel not in self.channels:
             self.channels[channel] = set()
 
+    def remove_conn(self, conn):
+        """
+        Remove a connection from all server state so channel lists stay accurate.
+        """
+        if conn in self.nicknames:
+            del self.nicknames[conn]
+
+        empty_channels = []
+        for ch, users in self.channels.items():
+            if conn in users:
+                users.remove(conn)
+            if not users:
+                empty_channels.append(ch)
+
+        for ch in empty_channels:
+            del self.channels[ch]
+
     def join_channel(self, conn, channel):
         self.ensure_channel(channel)
         self.channels[channel].add(conn)

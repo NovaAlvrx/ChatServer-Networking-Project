@@ -16,23 +16,26 @@ class ClientHandler(threading.Thread):
     def run(self):
         print(f"[THREAD] Started for {self.addr}")
 
-        while self.running:
-            try:
-                data = self.conn.recv(1024)
-                if not data:
+        try:
+            while self.running:
+                try:
+                    data = self.conn.recv(1024)
+                    if not data:
+                        break
+
+                    obj = parse_message(data)
+                    if not obj:
+                        continue
+
+                    self.handle_command(obj)
+
+                except ConnectionResetError:
                     break
-
-                obj = parse_message(data)
-                if not obj:
-                    continue
-
-                self.handle_command(obj)
-
-            except ConnectionResetError:
-                break
-
-        print(f"[THREAD] Closing connection for {self.addr}")
-        self.conn.close()
+        finally:
+            with self.lock:
+                self.core.remove_conn(self.conn)
+            print(f"[THREAD] Closing connection for {self.addr}")
+            self.conn.close()
 
     # ==== Command handling ====
 

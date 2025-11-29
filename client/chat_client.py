@@ -4,7 +4,7 @@ from protocol import make_command
 
 def main():
     HOST = "127.0.0.1"
-    PORT = 5001
+    PORT = 5002
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((HOST, PORT))
@@ -19,7 +19,7 @@ def main():
     while True:
         user_input = input("> ").strip()
 
-        if user_input.startswith("/"):
+        if user_input.startswith("/"): # start of a command
             parts = user_input.split()
             cmd = parts[0][1:]
 
@@ -48,7 +48,7 @@ def main():
                 print("[CLIENT] Unknown command")
                 continue
 
-        else:
+        else: 
             # normal chat message
             msg = make_command("message", text=user_input)
 

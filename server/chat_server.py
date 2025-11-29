@@ -5,7 +5,7 @@ from server_core import ServerCore
 
 def main():
     HOST = "0.0.0.0"
-    PORT = 5001
+    PORT = 5002
     MAX_THREADS = 4
 
     core = ServerCore()

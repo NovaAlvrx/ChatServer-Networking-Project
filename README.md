@@ -48,11 +48,37 @@ Completed by name (this README section). Designed JSON schema, command-mapping, 
 Completed by name. Handles commands, channels, broadcasts, user sessions, threading, and idle shutdown.
 
 **Requirement 3 – ChatClient Implementation:**  
-Completed by name. Handles IRC-style input, connects to server, sends objects, listens for events, and prints output.
+
+The ChatClient is a simple, text-based client that communicates with the ChatServer using the object-based JSON protocol defined above.
+
+### Design
+
+- Implemented in `client.py` in the class `ChatClient`.
+- The client takes no command line arguments. It is started with:
+  ```bash
+  python3 client.py
+## Example Session
+$ python3 client.py
+=== ChatClient ===
+Commands:
+  /connect <host> [port]
+  /nick <name>
+  /join <channel>
+  /leave [channel]
+  /list
+  /quit
+  /help
+
+> /connect localhost 5000
+[ERROR] Could not connect: [Errno 61] Connection refused   # (no server running yet)
+
+> /nick Luna
+[WARN] Not connected. Use /connect <host> [port].
+
+Once a ChatServer is running, multiple ChatClient instances can connect, join the same channel, and exchange messages using the protocol.
 
 **Requirement 4 – Documentation & Demonstration:**  
 Completed by both team members.
-
 
 ## GenAI Usage Disclosure
 Certain portions of this project were generated with the assistance of ChatGPT.  

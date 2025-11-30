@@ -1,0 +1,33 @@
+2025-11-30 16:04:05,597 [INFO] Server listening on port 5002
+2025-11-30 16:05:07,014 [INFO] Client connected from ('127.0.0.1', 50319)
+2025-11-30 16:05:07,015 [INFO] Handler started for ('127.0.0.1', 50319)
+2025-11-30 16:05:13,570 [INFO] Nick set for ('127.0.0.1', 50319): Luna
+2025-11-30 16:05:23,699 [INFO] ('127.0.0.1', 50319) joined channel #general
+2025-11-30 16:05:26,106 [INFO] Luna (('127.0.0.1', 50319)) said 'hello' in channels ['#general']
+2025-11-30 16:05:56,935 [INFO] Client connected from ('127.0.0.1', 50448)
+2025-11-30 16:05:56,935 [INFO] Handler started for ('127.0.0.1', 50448)
+2025-11-30 16:06:10,827 [INFO] Nick set for ('127.0.0.1', 50448): name
+2025-11-30 16:06:14,500 [INFO] name (('127.0.0.1', 50448)) said 'hi there' in channels []
+2025-11-30 16:08:50,751 [INFO] ('127.0.0.1', 50448) joined channel #general
+2025-11-30 16:08:55,174 [INFO] name (('127.0.0.1', 50448)) said 'hi there' in channels ['#general']
+2025-11-30 16:09:01,022 [INFO] Sent channel list to ('127.0.0.1', 50448)
+2025-11-30 16:09:09,317 [INFO] ('127.0.0.1', 50448) requested quit
+2025-11-30 16:09:09,317 [INFO] Connection closed for ('127.0.0.1', 50448)
+2025-11-30 16:09:15,576 [INFO] Luna (('127.0.0.1', 50319)) said 'are you there?' in channels ['#general']
+2025-11-30 16:09:20,615 [INFO] Luna (('127.0.0.1', 50319)) said ':(' in channels ['#general']
+2025-11-30 16:09:24,518 [INFO] ('127.0.0.1', 50319) requested quit
+2025-11-30 16:09:24,519 [INFO] Connection closed for ('127.0.0.1', 50319)
+2025-11-30 16:10:21,536 [INFO] Client connected from ('127.0.0.1', 51108)
+2025-11-30 16:10:21,537 [INFO] Handler started for ('127.0.0.1', 51108)
+2025-11-30 16:10:31,551 [INFO] Nick set for ('127.0.0.1', 51108): Luna
+2025-11-30 16:10:39,707 [INFO] ('127.0.0.1', 51108) joined channel #general
+2025-11-30 16:10:45,545 [INFO] Luna (('127.0.0.1', 51108)) said 'say anything' in channels ['#general']
+2025-11-30 16:11:27,898 [INFO] Client connected from ('127.0.0.1', 51277)
+2025-11-30 16:11:27,898 [INFO] Handler started for ('127.0.0.1', 51277)
+2025-11-30 16:11:42,504 [INFO] Nick set for ('127.0.0.1', 51277): name
+2025-11-30 16:11:50,600 [INFO] ('127.0.0.1', 51277) joined channel #general
+2025-11-30 16:11:52,888 [INFO] name (('127.0.0.1', 51277)) said 'hello' in channels ['#general']
+2025-11-30 16:12:05,314 [INFO] ('127.0.0.1', 51108) requested quit
+2025-11-30 16:12:05,315 [INFO] Connection closed for ('127.0.0.1', 51108)
+2025-11-30 16:12:11,873 [INFO] ('127.0.0.1', 51277) requested quit
+2025-11-30 16:12:11,873 [INFO] Connection closed for ('127.0.0.1', 51277)

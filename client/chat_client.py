@@ -1,61 +1,174 @@
+# client/chat_client.py
 import socket
+from typing import Optional
+
 from receiver_thread import ReceiverThread
 from protocol import make_command
 
-def main():
-    HOST = "127.0.0.1"
-    PORT = 5002
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((HOST, PORT))
+DEFAULT_PORT = 5002
 
-    print("[CLIENT] Connected.")
-    print("Commands: /nick, /join, /leave, /list, /quit")
 
-    # Start background listener so server events show up immediately
-    receiver = ReceiverThread(client_socket)
-    receiver.start()
-    
-    while True:
-        user_input = input("> ").strip()
+class ChatClient:
+    """
+    Text-based chat client for the group chat server.
 
-        if user_input.startswith("/"): # start of a command
-            parts = user_input.split()
-            cmd = parts[0][1:]
+    - Takes NO command-line arguments.
+    - User connects with: /connect <host> [port]
+    - Uses JSON object protocol via protocol.make_command()
+    """
 
-            if cmd == "nick":
-                msg = make_command("nick", nickname=parts[1])
+    def __init__(self) -> None:
+        self.sock: Optional[socket.socket] = None
+        self.receiver: Optional[ReceiverThread] = None
+        self.running: bool = True
 
-            elif cmd == "join":
-                msg = make_command("join", channel=parts[1])
+    # ------------------------------------------------------------------
+    # Connection management
+    # ------------------------------------------------------------------
 
-            elif cmd == "leave":
-                if len(parts) > 1:
-                    msg = make_command("leave", channel=parts[1])
-                else:
-                    msg = make_command("leave")
+    def connect(self, host: str, port: int = DEFAULT_PORT) -> None:
+        if self.sock is not None:
+            print("[CLIENT] Already connected. Use /quit to disconnect first.")
+            return
 
-            elif cmd == "list":
-                msg = make_command("list")
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((host, port))
+            print(f"[CLIENT] Connected to {host}:{port}.")
 
-            elif cmd == "quit":
-                msg = make_command("quit")
-                client_socket.sendall(msg)
-                receiver.stop()
+            # Start background listener so server events show up immediately
+            self.receiver = ReceiverThread(self.sock)
+            self.receiver.start()
+        except OSError as e:
+            print(f"[CLIENT] Could not connect: {e}")
+            self.sock = None
+            self.receiver = None
+
+    def disconnect(self) -> None:
+        """Cleanly close the connection (if any)."""
+        if self.receiver is not None:
+            self.receiver.stop()
+            self.receiver.join()
+            self.receiver = None
+
+        if self.sock is not None:
+            try:
+                self.sock.close()
+            except OSError:
+                pass
+            self.sock = None
+
+        print("[CLIENT] Disconnected.")
+
+    # ------------------------------------------------------------------
+    # Sending helpers
+    # ------------------------------------------------------------------
+
+    def _ensure_connected(self) -> bool:
+        if self.sock is None:
+            print("[CLIENT] Not connected. Use /connect <host> [port].")
+            return False
+        return True
+
+    def _send_command(self, command: str, **kwargs) -> None:
+        if not self._ensure_connected():
+            return
+        msg = make_command(command, **kwargs)
+        try:
+            self.sock.sendall(msg)
+        except OSError as e:
+            print(f"[CLIENT] Error sending command: {e}")
+            self.disconnect()
+
+    # ------------------------------------------------------------------
+    # REPL
+    # ------------------------------------------------------------------
+
+    def repl(self) -> None:
+        print("=== ChatClient ===")
+        print("Commands:")
+        print("  /connect <host> [port]")
+        print("  /nick <name>")
+        print("  /join <channel>")
+        print("  /leave [channel]")
+        print("  /list")
+        print("  /quit")
+        print("Anything else is sent as a message to the current channel(s).\n")
+
+        while self.running:
+            try:
+                user_input = input("> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print("\n[CLIENT] Exiting...")
+                if self.sock is not None:
+                    self._send_command("quit")
                 break
 
-            else:
-                print("[CLIENT] Unknown command")
+            if not user_input:
                 continue
 
-        else: 
-            # normal chat message
-            msg = make_command("message", text=user_input)
+            if user_input.startswith("/"):
+                self._handle_command(user_input)
+            else:
+                self._send_command("message", text=user_input)
 
-        client_socket.sendall(msg)
+        if self.sock is not None:
+            self.disconnect()
 
-    client_socket.close()
-    receiver.join()
+    def _handle_command(self, line: str) -> None:
+        parts = line.split()
+        cmd = parts[0][1:].lower()  # strip leading '/'
+
+        if cmd == "connect":
+            if len(parts) < 2:
+                print("Usage: /connect <host> [port]")
+                return
+            host = parts[1]
+            port = int(parts[2]) if len(parts) >= 3 else DEFAULT_PORT
+            self.connect(host, port)
+
+        elif cmd == "nick":
+            if len(parts) < 2:
+                print("Usage: /nick <name>")
+                return
+            self._send_command("nick", nickname=parts[1])
+
+        elif cmd == "join":
+            if len(parts) < 2:
+                print("Usage: /join <channel>")
+                return
+            self._send_command("join", channel=parts[1])
+
+        elif cmd == "leave":
+            if len(parts) >= 2:
+                self._send_command("leave", channel=parts[1])
+            else:
+                self._send_command("leave")
+
+        elif cmd == "list":
+            self._send_command("list")
+
+        elif cmd == "quit":
+            self._send_command("quit")
+            self.running = False
+
+        elif cmd == "help":
+            print("Commands:")
+            print("  /connect <host> [port]")
+            print("  /nick <name>")
+            print("  /join <channel>")
+            print("  /leave [channel]")
+            print("  /list")
+            print("  /quit")
+        else:
+            print(f"[CLIENT] Unknown command: {cmd}. Try /help.")
+
+
+def main() -> None:
+    client = ChatClient()
+    client.repl()
+
 
 if __name__ == "__main__":
     main()

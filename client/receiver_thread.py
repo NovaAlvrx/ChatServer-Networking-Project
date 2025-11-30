@@ -1,5 +1,18 @@
+# client/receiver_thread.py
 import threading
+
 from protocol import parse_message
+
+# === Color constants ===
+RESET = "\033[0m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+CYAN = "\033[96m"
+MAGENTA = "\033[95m"
+
+
+def color(text: str, code: str) -> str:
+    return f"{code}{text}{RESET}"
 
 
 class ReceiverThread(threading.Thread):
@@ -12,14 +25,14 @@ class ReceiverThread(threading.Thread):
         self.sock = sock
         self.running = True
 
-    def stop(self):
+    def stop(self) -> None:
         self.running = False
         try:
             self.sock.shutdown(1)
         except OSError:
             pass
 
-    def run(self):
+    def run(self) -> None:
         while self.running:
             try:
                 data = self.sock.recv(1024)
@@ -27,14 +40,14 @@ class ReceiverThread(threading.Thread):
                 break
 
             if not data:
-                print("\n[CLIENT] Disconnected from server.")
+                print(color("\n[CLIENT] Disconnected from server.", YELLOW))
                 break
 
             event = parse_message(data)
             if event:
                 self._display(event)
 
-    def _display(self, event):
+    def _display(self, event: dict) -> None:
         etype = event.get("event")
         args = event.get("args", {})
 
@@ -42,17 +55,23 @@ class ReceiverThread(threading.Thread):
             channel = args.get("channel", "?")
             sender = args.get("from_user", "Unknown")
             text = args.get("text", "")
-            print(f"\n[{channel}] {sender}: {text}")
+            print(color(f"\n[{channel}] {sender}: {text}", GREEN))
+
         elif etype == "joined":
-            print(f"\n[CLIENT] Joined {args.get('channel')}")
+            print(color(f"\n[CLIENT] Joined {args.get('channel')}", CYAN))
+
         elif etype == "left":
-            print(f"\n[CLIENT] Left {args.get('channel')}")
+            print(color(f"\n[CLIENT] Left {args.get('channel')}", YELLOW))
+
         elif etype == "list":
-            print(f"\n[CLIENT] Channels: {args.get('channels')}")
+            print(color(f"\n[CLIENT] Channels: {args.get('channels')}", MAGENTA))
+
         elif etype == "nick_set":
-            print(f"\n[CLIENT] Nickname set to {args.get('nickname')}")
+            print(color(f"\n[CLIENT] Nickname set to {args.get('nickname')}", CYAN))
+
         elif etype == "goodbye":
-            print("\n[CLIENT] Server closed connection.")
+            print(color("\n[CLIENT] Server closed connection.", YELLOW))
             self.running = False
+
         else:
-            print(f"\n[SERVER EVENT]: {event}")
+            print(color(f"\n[SERVER EVENT]: {event}", YELLOW))

@@ -1,89 +1,120 @@
-#  📌 Requirement 1 — Object-Based Protocol Design
-## Overview
+# Group Chat Service Project
+CSC 4350 Team Project
 
-Our chat system uses an object-based communication protocol over TCP.
-Although users type IRC-style commands (such as /nick or /join), the client translates those commands into JSON objects, sends them to the server, and receives JSON objects in return.
+## Team Members
+- **Luna Da Silva** - Panther ID: 002623889
+- **name** - Panther ID:
 
-This ensures all communication is structured, machine-parseable, and fully compatible with the system’s requirements.
+## Demo Video
+Youtube Link: 
 
-## Message Format & Encoding
-All messages exchanged between client and server follow these rules:
+## File & Folder Manifest
+This project is composed of a server module and a client module that communicate using a JSON-based object protocol over TCP.
 
- - **Transport**: TCP socket
- - **Encoding**: UTF-8
- - **Framing**: One complete JSON object per line, ending with **\n**
- - **Parsing**: Receiver reads a line, then applies **json.loads**
-
-Example message on the wire:
-**{"type":"command","action":"join","channel":"#general"}
-**
-
-## Project Overview
-This project implements a simple object-based chat system modeled after a subset of IRC commands. 
-It contains both a ChatServer and ChatClient that communicate over TCP using newline-delimited JSON objects. 
-The client accepts IRC-style commands (e.g., `/nick`, `/join`, `/list`) and translates them into structured JSON objects using the protocol defined above. 
-The server processes these commands, manages channels, broadcasts messages, and sends event/error objects back to clients.
-This project was developed collaboratively as part of a networking assignment.
-
-## Directory Structure
-| File | Description |
+| Path | Description |
 |------|-------------|
-| `README.md` | Project documentation and protocol design |
-| `protocol.py` | Shared functions for sending/receiving JSON objects |
-| `server.py` | ChatServer implementation |
-| `client.py` | ChatClient implementation |
-| `main.py` | Entry point wrapper for running server or client |
+| **README.md** | Project documentation (this file) |
+| **/server/** | Server module containing all server-side code |
+| ├── `chat_server.py` | Main server executable (start server here) |
+| ├── `client_handler.py` | Per-client thread logic and command handling |
+| ├── `server_core.py` | Shared server state: nicks, channels, connections |
+| ├── `protocol.py` | JSON encode/decode utilities (server-side) |
+| ├── `utils.py` | Logging + colored text output (extra credit) |
+| └── `server.log` | Auto-generated server activity log (extra credit) |
+| **/client/** | Client module containing all client-side code |
+| ├── `chat_client.py` | Requirement 3 client implementation (REPL, commands, JSON) |
+| ├── `receiver_thread.py` | Background thread that receives server events asynchronously |
+| └── `protocol.py` | JSON command builder (client-side) |
 
+### How To Run
+### **1. Start the Server**
+- Open a terminal and type:
+   cd server
+   python3 chat_server.py
+- Expected Outcome from Server:
+<span style="color:green;">[SERVER] Listening on 5002...</span>
+- This server supports:
+-  Multiple clients via threading
+-  Channel creation/join/leave
+-  Nickname assignement
+-  Broadcasting messages
+**-  Graceful shutdown using Ctrl-C**
+**- Logging connections, messages, and server events**
+**- Thread limit and overload handling**
 
-## Running the Server
-[Fill later]
+### **2. Start the Client(s)**
+- Open a second terminal and type:
+   cd client
+   python3 chat_client.py
+- Use the following commands inside client terminal:
+     /connect localhost 5002
+     /nick <name>
+     /join <channel>
+     /leave [channel]
+     /list
+     /quit
+     /help
 
+### **3. Start a second client (for multi-user testing)**
+- Open a third terminal and type:
+   cd client
+   python3 chat_client.py
+   /connect localhost 5002
+   /nick YourName
+   /join #general
+   Hi!
 
-## Requirements & Contribution Breakdown
+ Both clients will now receive each other's messages.
 
-**Requirement 1 – Object-Based Protocol Design:**  
-Completed by name (this README section). Designed JSON schema, command-mapping, server events, and error format.
+ ## How we tested
+ ### Connection Tests
+ - We verified that multiple clients can connect to the server at the same time
+ - <img width="315" height="32" alt="Screenshot 2025-11-30 at 18 27 42" src="https://github.com/user-attachments/assets/f1e5d769-d858-4557-ac44-144d45939274" />
 
-**Requirement 2 – ChatServer Implementation:**  
-Completed by name. Handles commands, channels, broadcasts, user sessions, threading, and idle shutdown.
+ - Verified that more than 5 people joining would give max out error
+ <img width="651" height="116" alt="Screenshot 2025-11-30 at 18 05 51" src="https://github.com/user-attachments/assets/35338c78-ad68-43eb-b859-4def3981460f" />
+<img width="371" height="52" alt="Screenshot 2025-11-30 at 18 06 27" src="https://github.com/user-attachments/assets/78a5e9ef-9f91-4bdb-952a-fd15c632b99b" />
 
-**Requirement 3 – ChatClient Implementation:**  
+### Nickname Test
+- After connecting to server, we typed in multiple tests to show the full functioning /nick command
+<img width="259" height="99" alt="Screenshot 2025-11-30 at 18 31 19" src="https://github.com/user-attachments/assets/03dff0b1-3f20-4fbb-8378-7d964b5275e4" />
 
-The ChatClient is a simple, text-based client that communicates with the ChatServer using the object-based JSON protocol defined above.
+### Channel Tests
+- Once nickname is set, user can join general chat by using /join function
+<img width="248" height="46" alt="Screenshot 2025-11-30 at 18 34 35" src="https://github.com/user-attachments/assets/0d516f2f-16ad-4b6d-a05c-b221e5ef6c44" />
 
-### Design
+### Messaging Tests
+- Another person can join the general chat and exchange messages amongst each other, showing log history for user in green text
+<img width="655" height="166" alt="Screenshot 2025-11-30 at 18 40 39" src="https://github.com/user-attachments/assets/2651ce87-d3ca-4e25-acf7-d381557faaa2" />
 
-- Implemented in `client.py` in the class `ChatClient`.
-- The client takes no command line arguments. It is started with:
-  ```bash
-  python3 client.py
-## Example Session
-$ python3 client.py
-=== ChatClient ===
-Commands:
-  /connect <host> [port]
-  /nick <name>
-  /join <channel>
-  /leave [channel]
-  /list
-  /quit
-  /help
+### Graceful Disconnects
+- Ctrl-C shuts down server for
 
-> /connect localhost 5000
-[ERROR] Could not connect: [Errno 61] Connection refused   # (no server running yet)
+### Logging Verification
+- Server shows connection timestamps, channel joins, message logs, and server stops
 
-> /nick Luna
-[WARN] Not connected. Use /connect <host> [port].
+## Observations & Reflections
+- Designing a JSON-based object protocol requires careful planning for both commands and events.
+- TCP streams require explicit message framing — in this project we used newline-delimited JSON.
+- Concurrency with threads requires:
+   - shared state (ServerCore)
+   - locks (threading.Lock)
+   - careful cleanup on disconnect
+- Asynchronous receiving (ReceiverThread) improves client responsiveness significantly.
 
-Once a ChatServer is running, multiple ChatClient instances can connect, join the same channel, and exchange messages using the protocol.
-
-**Requirement 4 – Documentation & Demonstration:**  
-Completed by both team members.
-
-## GenAI Usage Disclosure
-Certain portions of this project were generated with the assistance of ChatGPT.  
-All generated content was reviewed, edited, and expanded by the project team.  
-Below are the prompts and corresponding responses:
- - [Fill later]
- - [Fill later]
-
+### Team Roles
+- Luna
+   - Integrated server JSON protocol with client commands
+   - Implemented colored output for client (extra credit)
+   - Added server logging + server.log (extra credit)
+   - Added graceful Ctrl-C shutdown logic (extra credit)
+   - Helped debug threading and connection issues
+   - Wrote project documentation and demo notes
+ 
+- Noah
+   - Created ServerCore state manager
+   - Implemented ClientHandler threading model
+   - Built server-side protocol encoder/decoder
+   - Designed channel structures, nicknames, and broadcasting logic
+   - Ensured correctness of server concurrency behavior
+   - Wrote AI disclosure document

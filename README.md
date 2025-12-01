@@ -3,7 +3,7 @@ CSC 4350 Team Project
 
 ## Team Members
 - **Luna Da Silva** - Panther ID: 002623889
-- **name** - Panther ID:
+- **Noah Alvarez** - Panther ID: 002635100
 
 ## Demo Video
 Youtube Link: https://youtu.be/aGbGRNbinOE

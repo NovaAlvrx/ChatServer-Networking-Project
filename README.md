@@ -6,7 +6,7 @@ CSC 4350 Team Project
 - **name** - Panther ID:
 
 ## Demo Video
-Youtube Link: 
+Youtube Link: https://youtu.be/aGbGRNbinOE
 
 ## File & Folder Manifest
 This project is composed of a server module and a client module that communicate using a JSON-based object protocol over TCP.
